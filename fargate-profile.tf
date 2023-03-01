@@ -1,5 +1,5 @@
 module "fargate_profile" {
-  source = "../../modules/fargate-profile"
+  source = "terraform-aws-modules/eks/aws//modules/fargate-profile"
 
   name         = "separate-fargate-profile"
   cluster_name = module.eks.cluster_name

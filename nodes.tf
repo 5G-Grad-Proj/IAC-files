@@ -1,5 +1,5 @@
 module "eks_managed_node_group" {
-  source = "../../modules/eks-managed-node-group"
+  source = "terraform-aws-modules/eks/aws//modules/eks-managed-node-group"
 
   name            = "separate-eks-mng"
   cluster_name    = module.eks.cluster_name
@@ -28,7 +28,7 @@ module "eks_managed_node_group" {
 }
 
 module "self_managed_node_group" {
-  source = "../../modules/self-managed-node-group"
+  source = "terraform-aws-modules/eks/aws//examples/self_managed_node_group"
 
   name                = "separate-self-mng"
   cluster_name        = module.eks.cluster_name
