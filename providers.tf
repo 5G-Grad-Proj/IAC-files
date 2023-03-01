@@ -2,6 +2,9 @@ provider "aws" {
   region = local.region
 }
 
+data "aws_availability_zones" "available" {}
+data "aws_caller_identity" "current" {}
+
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
@@ -13,6 +16,3 @@ provider "kubernetes" {
     args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
-
-data "aws_availability_zones" "available" {}
-data "aws_caller_identity" "current" {}

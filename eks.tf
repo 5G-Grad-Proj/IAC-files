@@ -23,13 +23,6 @@ module "eks" {
     }
   }
 
-  # External encryption key
-  create_kms_key = false
-  cluster_encryption_config = {
-    resources        = ["secrets"]
-    provider_key_arn = module.kms.key_arn
-  }
-
   iam_role_additional_policies = {
     additional = aws_iam_policy.additional.arn
   }
@@ -68,7 +61,6 @@ module "eks" {
       type        = "ingress"
       self        = true
     }
-    # Test: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2319
     ingress_source_security_group_id = {
       description              = "Ingress from another computed security group"
       protocol                 = "tcp"
@@ -96,31 +88,14 @@ module "eks" {
 
   self_managed_node_groups = {
     spot = {
-      instance_type = "m5.large"
-      instance_market_options = {
-        market_type = "spot"
-      }
-
-      pre_bootstrap_user_data = <<-EOT
-        echo "foo"
-        export FOO=bar
-      EOT
-
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-      post_bootstrap_user_data = <<-EOT
-        cd /tmp
-        sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-        sudo systemctl enable amazon-ssm-agent
-        sudo systemctl start amazon-ssm-agent
-      EOT
+      instance_type = "t2.micro"
     }
   }
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+    instance_types = ["t2.micro"]
 
     attach_cluster_primary_security_group = true
     vpc_security_group_ids                = [aws_security_group.additional.id]
@@ -144,14 +119,6 @@ module "eks" {
         GithubOrg   = "terraform-aws-modules"
       }
 
-      taints = {
-        dedicated = {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      }
-
       update_config = {
         max_unavailable_percentage = 33 # or set `max_unavailable`
       }
@@ -161,99 +128,4 @@ module "eks" {
       }
     }
   }
-
-  # Fargate Profile(s)
-  fargate_profiles = {
-    default = {
-      name = "default"
-      selectors = [
-        {
-          namespace = "kube-system"
-          labels = {
-            k8s-app = "kube-dns"
-          }
-        },
-        {
-          namespace = "default"
-        }
-      ]
-
-      tags = {
-        Owner = "test"
-      }
-
-      timeouts = {
-        create = "20m"
-        delete = "20m"
-      }
-    }
-  }
-
-  # Create a new cluster where both an identity provider and Fargate profile is created
-  # will result in conflicts since only one can take place at a time
-  # # OIDC Identity provider
-  # cluster_identity_providers = {
-  #   sts = {
-  #     client_id = "sts.amazonaws.com"
-  #   }
-  # }
-
-  # aws-auth configmap
-  manage_aws_auth_configmap = true
-
-  aws_auth_node_iam_role_arns_non_windows = [
-    module.eks_managed_node_group.iam_role_arn,
-    module.self_managed_node_group.iam_role_arn,
-  ]
-  aws_auth_fargate_profile_pod_execution_role_arns = [
-    module.fargate_profile.fargate_profile_pod_execution_role_arn
-  ]
-
-  aws_auth_roles = [
-    {
-      rolearn  = module.eks_managed_node_group.iam_role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-    {
-      rolearn  = module.self_managed_node_group.iam_role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-    {
-      rolearn  = module.fargate_profile.fargate_profile_pod_execution_role_arn
-      username = "system:node:{{SessionName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-        "system:node-proxier",
-      ]
-    }
-  ]
-
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::66666666666:user/user1"
-      username = "user1"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::66666666666:user/user2"
-      username = "user2"
-      groups   = ["system:masters"]
-    },
-  ]
-
-  aws_auth_accounts = [
-    "777777777777",
-    "888888888888",
-  ]
-
-  tags = local.tags
 }
