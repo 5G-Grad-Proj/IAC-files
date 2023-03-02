@@ -111,7 +111,7 @@ module "eks" {
       max_size     = 10
       desired_size = 1
 
-      instance_types = ["t3.large"]
+      instance_types = ["t2.micro"]
       capacity_type  = "SPOT"
       labels = {
         Environment = "test"
