@@ -99,7 +99,7 @@ module "eks" {
       }
 
       update_config = {
-        max_unavailable_percentage = 33 # or set `max_unavailable`
+        max_unavailable_percentage = 33
       }
 
       tags = local.tags
