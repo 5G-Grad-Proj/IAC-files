@@ -36,7 +36,7 @@ module "eks" {
     ingress_nodes_ephemeral_ports_tcp = {
       description                = "Nodes on ephemeral ports"
       protocol                   = "tcp"
-      from_port                  = 1025
+      from_port                  = 1
       to_port                    = 65535
       type                       = "ingress"
       source_node_security_group = true
