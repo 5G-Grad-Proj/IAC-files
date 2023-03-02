@@ -71,27 +71,6 @@ module "eks" {
     }
   }
 
-  # Self Managed Node Group(s)
-  self_managed_node_group_defaults = {
-    vpc_security_group_ids = [aws_security_group.additional.id]
-    iam_role_additional_policies = {
-      additional = aws_iam_policy.additional.arn
-    }
-
-    instance_refresh = {
-      strategy = "Rolling"
-      preferences = {
-        min_healthy_percentage = 66
-      }
-    }
-  }
-
-  self_managed_node_groups = {
-    spot = {
-      instance_type = "t2.micro"
-    }
-  }
-
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
