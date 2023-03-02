@@ -102,9 +102,7 @@ module "eks" {
         max_unavailable_percentage = 33 # or set `max_unavailable`
       }
 
-      tags = {
-        ExtraTag = "example"
-      }
+      tags = local.tags
     }
   }
 }
