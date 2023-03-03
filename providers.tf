@@ -2,8 +2,12 @@ provider "aws" {
   region = local.region
 }
 
-data "aws_availability_zones" "available" {}
-data "aws_caller_identity" "current" {}
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config-eks"
+    config_context = module.eks.cluster_arn
+  }
+}
 
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
@@ -16,3 +20,9 @@ provider "kubernetes" {
     args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
+
+# DATA SOURCES
+data "aws_availability_zones" "available" {}
+
+data "aws_caller_identity" "current" {}
+
