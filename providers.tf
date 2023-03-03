@@ -2,27 +2,24 @@ provider "aws" {
   region = local.region
 }
 
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config-eks"
-    config_context = module.eks.cluster_arn
-  }
-}
-
 provider "kubernetes" {
+  version = "~> 2.3"
+
+  # Configure authentication with the EKS cluster
+  load_config_file       = false
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  token                  = module.eks.worker_iam_oidc_provider_token
 
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
+  # Configure RBAC permissions
+  config_context_auth_info = module.eks.kubeconfig_authenticator
+  config_context_cluster   = module.eks.kubeconfig_cluster
+
+  # Configure resource prefix
+  namespace = "default"
 }
 
 # DATA SOURCES
 data "aws_availability_zones" "available" {}
 
 data "aws_caller_identity" "current" {}
-
