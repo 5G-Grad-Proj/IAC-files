@@ -105,4 +105,31 @@ module "eks" {
       tags = local.tags
     }
   }
+
+  manage_aws_auth_configmap = true
+
+  # aws_auth_roles = [
+  #   {
+  #     rolearn  = module.eks.eks_managed_node_groups.iam_role_arn
+  #     username = "system:node:{{EC2PrivateDNSName}}"
+  #     groups = [
+  #       "system:bootstrappers",
+  #       "system:nodes",
+  #     ]
+  #   }
+  # ]
+
+  aws_auth_users = [
+    {
+      userarn  = "arn:aws:iam::989152389096:user/admin"
+      username = "admin"
+      groups   = ["system:masters"]
+    }
+  ]
+
+  aws_auth_accounts = [
+    "989152389096"
+  ]
+
+  tags = local.tags
 }
