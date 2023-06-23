@@ -16,8 +16,35 @@ module "eks" {
   # create_aws_auth_configmap = true
   # manage_aws_auth_configmap = true
 
+    cluster_security_group_additional_rules = {
+    ingress_nodes_ephemeral_ports_tcp = {
+      description                = "Nodes on ephemeral ports"
+      protocol                   = "tcp"
+      from_port                  = 0
+      to_port                    = 65535
+      type                       = "ingress"
+      source_node_security_group = true
+    }
+    ingress_source_security_group_id = {
+      description              = "Ingress from another computed security group"
+      protocol                 = "tcp"
+      from_port                = 22
+      to_port                  = 22
+      type                     = "ingress"
+      source_security_group_id = aws_security_group.additional.id
+    }
+  }
+
   eks_managed_node_groups = {
-    blue = {}
+
+    blue = {
+      min_size     = 1
+      max_size     = 1
+      desired_size = 1
+
+      instance_types = ["t2.micro"]
+      capacity_type  = "ON_DEMAND"
+    }
     green = {
       min_size     = 1
       max_size     = 1
