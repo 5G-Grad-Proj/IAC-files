@@ -13,8 +13,20 @@ module "eks" {
 
 
   # aws-auth configmap
-  create_aws_auth_configmap = true
+  # create_aws_auth_configmap = true
   # manage_aws_auth_configmap = true
+
+  eks_managed_node_groups = {
+    blue = {}
+    green = {
+      min_size     = 1
+      max_size     = 1
+      desired_size = 1
+
+      instance_types = ["t2.micro"]
+      capacity_type  = "ON_DEMAND"
+    }
+  }
 
   aws_auth_roles = [
     {
@@ -28,6 +40,16 @@ module "eks" {
     {
       userarn  = "arn:aws:iam::989152389096:user/Ahmad"
       username = "Ahmad-EKS"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::989152389096:user/root"
+      username = "root"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::989152389096:user/islam"
+      username = "islam"
       groups   = ["system:masters"]
     }
   ]
