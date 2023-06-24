@@ -11,25 +11,33 @@ module "eks" {
   subnet_ids               = module.vpc.public_subnets
   control_plane_subnet_ids = module.vpc.public_subnets
 
+  cluster_addons = {
+    coredns = {
+      preserve    = true
+      most_recent = true
+
+      timeouts = {
+        create = "25m"
+        delete = "10m"
+      }
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+    }
+  }
 
   # aws-auth configmap
   # create_aws_auth_configmap = true
   # manage_aws_auth_configmap = true
 
   eks_managed_node_groups = {
-
-    blue = {
-      min_size     = 3
-      max_size     = 5
-      desired_size = 3
-
-      instance_types = ["t3.large"]
-      capacity_type  = "ON_DEMAND"
-    }
     green = {
-      min_size     = 3
-      max_size     = 5
-      desired_size = 3
+      min_size     = 1
+      max_size     = 8
+      desired_size = 1
 
       instance_types = ["t3.large"]
       capacity_type  = "ON_DEMAND"
