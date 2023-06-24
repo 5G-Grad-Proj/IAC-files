@@ -19,19 +19,19 @@ module "eks" {
   eks_managed_node_groups = {
 
     blue = {
-      min_size     = 1
-      max_size     = 1
-      desired_size = 1
+      min_size     = 3
+      max_size     = 5
+      desired_size = 3
 
-      instance_types = ["t2.micro"]
+      instance_types = ["t3.large"]
       capacity_type  = "ON_DEMAND"
     }
     green = {
-      min_size     = 1
-      max_size     = 1
-      desired_size = 1
+      min_size     = 3
+      max_size     = 5
+      desired_size = 3
 
-      instance_types = ["t2.micro"]
+      instance_types = ["t3.large"]
       capacity_type  = "ON_DEMAND"
     }
   }
