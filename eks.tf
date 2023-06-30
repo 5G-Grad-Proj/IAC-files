@@ -12,19 +12,23 @@ module "eks" {
   control_plane_subnet_ids = module.vpc.public_subnets
 
   cluster_addons = {
-    # coredns = {
-    #   preserve    = true
-    #   most_recent = true
+    coredns = {
+      preserve    = true
+      most_recent = true
 
-    #   timeouts = {
-    #     create = "25m"
-    #     delete = "10m"
-    #   }
-    # }
+      timeouts = {
+        create = "25m"
+        delete = "10m"
+      }
+    }
     kube-proxy = {
       most_recent = true
     }
     vpc-cni = {
+      most_recent = true
+    }
+    aws-ebs-csi-driver = {
+      service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
       most_recent = true
     }
   }

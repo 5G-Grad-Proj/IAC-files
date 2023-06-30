@@ -20,21 +20,14 @@ module "eks_managed_node_group" {
   capacity_type  = "ON_DEMAND"
 
   ami_type = "AL2_x86_64"
-  platform = "ubuntu"
 
   enable_bootstrap_user_data = false
 
   post_bootstrap_user_data = <<-EOT
 
     #!/bin/bash
-    sudo apt update
-    sudo apt upgrade
-    apt-get install -y git
-    git clone -b v0.3.1 https://github.com/free5gc/gtp5g.git
-    cd gtp5g
-    sudo apt install -y make
-    make
-    sudo make install
+    sudo yum update -y
+
 
     EOT
 
