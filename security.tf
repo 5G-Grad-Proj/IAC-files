@@ -6,7 +6,7 @@ resource "aws_security_group" "additional" {
     from_port = 22
     to_port   = 22
     protocol  = "tcp"
-    cidr_blocks = [local.vpc_cidr]
+    cidr_blocks = [local.vpc_cidr_source]
   }
 
   tags = merge(local.tags, { Name = "${local.name}-additional" })
