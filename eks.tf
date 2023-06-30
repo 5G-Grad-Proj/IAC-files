@@ -36,13 +36,11 @@ module "eks" {
   # aws-auth configmap
   # create_aws_auth_configmap = true
   # manage_aws_auth_configmap = true
-
   # eks_managed_node_groups = {
   #   green = {
   #     min_size     = 1
   #     max_size     = 8
   #     desired_size = 1
-
   #     instance_types = ["t3.large"]
   #     capacity_type  = "ON_DEMAND"
   #   }
@@ -89,7 +87,6 @@ module "eks" {
       source_security_group_id = aws_security_group.additional.id
     }
   }
-
 
   aws_auth_roles = [
     {
