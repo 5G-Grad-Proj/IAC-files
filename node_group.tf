@@ -21,13 +21,20 @@ module "eks_managed_node_group" {
 
   ami_type = "AL2_x86_64"
 
-  enable_bootstrap_user_data = false
+  enable_bootstrap_user_data = true
 
   post_bootstrap_user_data = <<-EOT
 
     #!/bin/bash
     sudo yum update -y
-
+    sudo yum install kernel-devel -y
+    yum install -y git
+    git clone https://github.com/free5gc/gtp5g.git
+    cd gtp5g
+    sudo yum install -y make
+    sed -i 's|KDIR := /lib/modules/$(KVER)/build|KDIR := /usr/src/kernels/$(shell uname -r)|' ./Makefile
+    make
+    sudo make install
 
     EOT
 
