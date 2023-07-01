@@ -25,7 +25,6 @@ module "eks_managed_node_group" {
 
   post_bootstrap_user_data = <<-EOT
 
-    #!/bin/bash
     sudo yum update -y
     sudo yum install kernel-devel -y
     yum install -y git
