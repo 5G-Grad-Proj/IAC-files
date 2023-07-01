@@ -11,7 +11,7 @@ spec:
   - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   local:
-    path: /home/vagrant/kubedata
+    path: /home/mongodb
   nodeAffinity:
     required:
       nodeSelectorTerms:

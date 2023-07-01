@@ -12,9 +12,9 @@ module "eks_managed_node_group" {
     module.eks.cluster_security_group_id, aws_security_group.additional.id,
   ]
 
-  min_size     = 1
-  max_size     = 5
-  desired_size = 3
+  min_size     = 3
+  max_size     = 6
+  desired_size = 4
 
   instance_types = ["t3.large"]
   capacity_type  = "ON_DEMAND"
