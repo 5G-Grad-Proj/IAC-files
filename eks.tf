@@ -33,20 +33,6 @@ module "eks" {
     }
   }
 
-  # aws-auth configmap
-  # create_aws_auth_configmap = true
-  # manage_aws_auth_configmap = true
-  # eks_managed_node_groups = {
-  #   green = {
-  #     min_size     = 1
-  #     max_size     = 8
-  #     desired_size = 1
-  #     instance_types = ["t3.large"]
-  #     capacity_type  = "ON_DEMAND"
-  #   }
-  # }
-
-  # Extend cluster security group rules
   cluster_security_group_additional_rules = {
     ingress_nodes_ephemeral_ports_tcp = {
       description                = "Nodes on ephemeral ports"
@@ -56,7 +42,6 @@ module "eks" {
       type                       = "ingress"
       source_node_security_group = true
     }
-    # Test: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2319
     ingress_source_security_group_id = {
       description              = "Ingress from another computed security group"
       protocol                 = "tcp"
@@ -67,7 +52,6 @@ module "eks" {
     }
   }
 
-  # Extend node-to-node security group rules
   node_security_group_additional_rules = {
     ingress_self_all = {
       description = "Node to node all ports/protocols"
@@ -77,7 +61,6 @@ module "eks" {
       type        = "ingress"
       self        = true
     }
-    # Test: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2319
     ingress_source_security_group_id = {
       description              = "Ingress from another computed security group"
       protocol                 = "tcp"
