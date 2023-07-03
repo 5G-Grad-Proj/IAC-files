@@ -12,9 +12,9 @@ module "eks_managed_node_group" {
     module.eks.cluster_security_group_id, aws_security_group.additional.id,
   ]
 
-  min_size     = 3
-  max_size     = 6
-  desired_size = 4
+  min_size     = 2
+  max_size     = 8
+  desired_size = 3
 
   instance_types = ["t3.large"]
   capacity_type  = "ON_DEMAND"
@@ -23,19 +23,27 @@ module "eks_managed_node_group" {
 
   enable_bootstrap_user_data = true
 
-  post_bootstrap_user_data = <<-EOT
+  post_bootstrap_user_data = <<-EOF
+  
+  MIME-Version: 1.0
+  Content-Type: multipart/mixed; boundary="==BOUNDARY=="
 
-    sudo yum update -y
-    sudo yum install kernel-devel -y
-    yum install -y git
-    git clone https://github.com/free5gc/gtp5g.git
-    cd gtp5g
-    sudo yum install -y make
-    sed -i 's|KDIR := /lib/modules/$(KVER)/build|KDIR := /usr/src/kernels/$(shell uname -r)|' ./Makefile
-    make
-    sudo make install
+  --==BOUNDARY==
+  Content-Type: text/x-shellscript; charset="us-ascii"
 
-    EOT
+  #!/bin/bash
+  sudo yum update -y
+  sudo yum install kernel-devel -y
+  yum install -y git
+  git clone https://github.com/free5gc/gtp5g.git
+  cd gtp5g
+  sudo yum install -y make
+  sed -i 's|KDIR := /lib/modules/$(KVER)/build|KDIR := /usr/src/kernels/$(uname -r)|' ./Makefile
+  make
+  sudo make install
+
+  --==BOUNDARY==--
+  EOF
 
   tags = merge(local.tags, { Separate = "eks-managed-node-group" })
 }
